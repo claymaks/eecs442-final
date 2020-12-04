@@ -189,6 +189,7 @@ class ImageDownloader(object):
         self.output = "{}_{}_{}_{}"
 
         self.contents = open(os.path.join(output_path, "directory.txt"), 'w+')
+        self.duplicate_check = []
 
     def parse(self, url):
         split = url.split('/')
@@ -196,8 +197,9 @@ class ImageDownloader(object):
                self.insert_str + \
                '/'.join(split[self.slice_end:])
 
-    def download(self):
+    def download(self, name_gen=lambda comma_del, path_del: [*comma_del[:3], path_del[-1]]):
         lines = self.file.readlines()
+        num = 0
         for _line in lines:
             try:
                 line = _line.strip()
@@ -205,7 +207,11 @@ class ImageDownloader(object):
                 path_del = ','.join(comma_del[3:]).split('/')
                 image_name = os.path.join(
                     self.output_path,
-                    self.output.format(*comma_del[:3], path_del[-1]))
+                    self.output.format(*name_gen(comma_del, path_del)))
+                while image_name in self.duplicate_check:
+                    print("\tduplicate found:", image_name)
+                else:
+                    self.duplicate_check.append(image_name)
                 url = self.parse('/'.join(path_del))
             except Exception as e:
                 print(f"error ({e})\n\tparsing: {_line}")
@@ -221,7 +227,7 @@ class ImageDownloader(object):
                     print(f"error ({e})\n\tgetting {url}")
                     time.sleep(1)
                 else:
-                    print(f"retrieved {path_del[-1]}")
+                    print(f"retrieved {name_gen(comma_del, path_del)[-1]}")
         self.contents.close()
         
 
@@ -243,6 +249,9 @@ def remove_non_prod(name):
 
     return lambda x: True
 
+def ua_parse(url):
+    return url.split('?')[0] + "?rp=standard-30pad|gridTileDesktop&scl=1&fmt=jpg&qlt=50&resMode=sharp2&cache=on,on&bgc=FFFFFF&wid=256&hei=256&size=200,200"
+
 
 if __name__ == "__main__":
     dirname = os.path.dirname(__file__)
@@ -255,6 +264,19 @@ if __name__ == "__main__":
     # UA = ImageScraper(ua_urls, name="underarmor", parse=remove_non_prod)
     # UA.scrape()
 
-    adidas_file = os.path.join(dirname, "image_urls/adidas_urls_1606867389.csv")
-    Adidas_dl = ImageDownloader(adidas_file, "images/adidas", 4, 5, '/w_256,h_256/')
-    Adidas_dl.download()
+    # nike_file = os.path.join(dirname, "image_urls/nike_urls_1606867133.csv")
+    # Nike_dl = ImageDownloader(nike_file, "images/nike", 5, 6, '/w_256/')
+    # Nike_dl.download()
+
+    # adidas_file = os.path.join(dirname, "image_urls/adidas_urls_1606867389.csv")
+    # Adidas_dl = ImageDownloader(adidas_file, "images/adidas", 4, 5, '/w_256,h_256/')
+    # Adidas_dl.download()
+
+    puma_file = os.path.join(dirname, "image_urls/puma_urls_1606864012.csv")
+    Puma_dl = ImageDownloader(puma_file, "images/puma", 5, 6, '/w_256,h_256/')
+    Puma_dl.download(name_gen=lambda comma_del, path_del: [*comma_del[:3], path_del[-1] + ".jpg"])
+
+    # ua_file = os.path.join(dirname, "image_urls/underarmor_urls_1606867521.csv")
+    # UA_dl = ImageDownloader(ua_file, "images/underarmor", 4, 5, '/w_256,h_256/')
+    # UA_dl.parse = ua_parse
+    # UA_dl.download(name_gen=lambda comma_del, path_del: [*comma_del[:3], path_del[-1].split('?')[0] + '.jpg'])
