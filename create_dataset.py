@@ -188,6 +188,8 @@ class ImageDownloader(object):
         # brand_gender_category_name.jpg
         self.output = "{}_{}_{}_{}"
 
+        self.contents = open(os.path.join(output_path, "directory.txt"), 'w+')
+
     def parse(self, url):
         split = url.split('/')
         return '/'.join(split[:self.slice_start]) + \
@@ -214,11 +216,13 @@ class ImageDownloader(object):
                     img_file = open(image_name, "wb")
                     img_file.write(img.content)
                     img_file.close()
+                    print(image_name, file=self.contents)
                 except Exception as e:
                     print(f"error ({e})\n\tgetting {url}")
                     time.sleep(1)
                 else:
                     print(f"retrieved {path_del[-1]}")
+        self.contents.close()
         
 
         
