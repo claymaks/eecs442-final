@@ -125,7 +125,7 @@ class ImageScraper(object):
         # brand, sex, class, url
         self.log_string = "{},{},{},{}"
         if not file:
-            self.file = open(os.path.join(dirname, f"images/{self.name}_urls_{int(time.time())}.csv"), "a+")
+            self.file = open(os.path.join(dirname, f"image_urls/{self.name}_urls_{int(time.time())}.csv"), "a+")
         else:
             self.file = open(file, "a+")
         
@@ -175,6 +175,52 @@ class ImageScraper(object):
         print(f"{len(self.image_urls)} images logged")
         self.file.close()
 
+
+class ImageDownloader(object):
+    def __init__(self, file_in, output_path, slice_start, slice_end, insert_str):
+        self.slice_start = slice_start
+        self.slice_end = slice_end
+        self.insert_str = insert_str
+        
+        dirname = os.path.dirname(__file__)
+        self.output_path = output_path
+        self.file = open(file_in, "r")
+        # brand_gender_category_name.jpg
+        self.output = "{}_{}_{}_{}"
+
+    def parse(self, url):
+        split = url.split('/')
+        return '/'.join(split[:self.slice_start]) + \
+               self.insert_str + \
+               '/'.join(split[self.slice_end:])
+
+    def download(self):
+        lines = self.file.readlines()
+        for _line in lines:
+            try:
+                line = _line.strip()
+                comma_del = line.split(',')
+                path_del = ','.join(comma_del[3:]).split('/')
+                image_name = os.path.join(
+                    self.output_path,
+                    self.output.format(*comma_del[:3], path_del[-1]))
+                url = self.parse('/'.join(path_del))
+            except Exception as e:
+                print(f"error ({e})\n\tparsing: {_line}")
+                time.sleep(1)
+            else:
+                try:
+                    img = requests.get(url)
+                    img_file = open(image_name, "wb")
+                    img_file.write(img.content)
+                    img_file.close()
+                except Exception as e:
+                    print(f"error ({e})\n\tgetting {url}")
+                    time.sleep(1)
+                else:
+                    print(f"retrieved {path_del[-1]}")
+        
+
         
 def remove_non_prod(name):
     def adidas(url):
@@ -195,11 +241,16 @@ def remove_non_prod(name):
 
 
 if __name__ == "__main__":
-    Nike = ImageScraper(nike_urls, name="nike")
-    Nike.scrape()
-    Adidas = ImageScraper(adidas_urls, name="adidas", parse=remove_non_prod)
-    Adidas.scrape()
+    dirname = os.path.dirname(__file__)
+    # Nike = ImageScraper(nike_urls, name="nike")
+    # Nike.scrape()
+    # Adidas = ImageScraper(adidas_urls, name="adidas", parse=remove_non_prod)
+    # Adidas.scrape()
     # Puma = ImageScraper(puma_urls, name="puma", parse=remove_non_prod)
     # Puma.scrape()
-    UA = ImageScraper(ua_urls, name="underarmor", parse=remove_non_prod)
-    UA.scrape()
+    # UA = ImageScraper(ua_urls, name="underarmor", parse=remove_non_prod)
+    # UA.scrape()
+
+    adidas_file = os.path.join(dirname, "image_urls/adidas_urls_1606867389.csv")
+    Adidas_dl = ImageDownloader(adidas_file, "images/adidas", 4, 5, '/w_256,h_256/')
+    Adidas_dl.download()
