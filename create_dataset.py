@@ -219,10 +219,9 @@ class ImageDownloader(object):
             else:
                 try:
                     img = requests.get(url)
-                    img_file = open(image_name, "wb")
-                    img_file.write(img.content)
-                    img_file.close()
-                    print(image_name, file=self.contents)
+                    with open(image_name, "wb") as img_file:
+                        img_file.write(img.content)
+                    print(image_name.split('/')[-1], file=self.contents)
                 except Exception as e:
                     print(f"error ({e})\n\tgetting {url}")
                     time.sleep(1)
@@ -272,9 +271,9 @@ if __name__ == "__main__":
     # Adidas_dl = ImageDownloader(adidas_file, "images/adidas", 4, 5, '/w_256,h_256/')
     # Adidas_dl.download()
 
-    puma_file = os.path.join(dirname, "image_urls/puma_urls_1606864012.csv")
-    Puma_dl = ImageDownloader(puma_file, "images/puma", 5, 6, '/w_256,h_256/')
-    Puma_dl.download(name_gen=lambda comma_del, path_del: [*comma_del[:3], path_del[-1] + ".jpg"])
+    # puma_file = os.path.join(dirname, "image_urls/puma_urls_1606864012.csv")
+    # Puma_dl = ImageDownloader(puma_file, "images/puma", 5, 6, '/w_256,h_256/')
+    # Puma_dl.download(name_gen=lambda comma_del, path_del: [*comma_del[:3], path_del[-1] + ".jpg"])
 
     # ua_file = os.path.join(dirname, "image_urls/underarmor_urls_1606867521.csv")
     # UA_dl = ImageDownloader(ua_file, "images/underarmor", 4, 5, '/w_256,h_256/')
