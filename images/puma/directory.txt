@@ -95,7 +95,6 @@ puma_mens_training&gym_LQDCELL-Optic-Stealth-Men's-Training-Shoes.jpg
 puma_mens_heritage_basketball_Sky-LX-Lo-Luxe-Sneakers.jpg
 puma_womens_heritage_basketball_Ralph-Sampson-Lo-Metal-Women's-Sneakers.jpg
 puma_womens_running_HYBRID-NX-Ozone-Women's-Running-Shoes.jpg
-puma_mens_lifestyle_RS-X-Mid-Militia-Sneakers.jpg
 puma_womens_running_SPEED-Orbiter-Women's-Running-Shoes.jpg
 puma_womens_lifestyle_Mile-Rider-Chrome-Desert-Women's-Sneakers.jpg
 puma_mens_soccer_PUMA-x-KIDSUPER-STUDIOS-King-TT-Men's-Soccer-Shoes.jpg
@@ -136,7 +135,6 @@ puma_mens_heritage_basketball_Ralph-Sampson-Mid-Stitch-Men's-Sneakers.jpg
 puma_mens_motorsport_Porsche-Design-XETIC-Men's-Motorsport-Shoes.jpg
 puma_mens_running_Calibrate-Runner-Mono-Men's-Shoes.jpg
 puma_mens_training&gym_PUMA-x-FIRST-MILE-LQDCELL-Method-Xtreme-Men's-Training-Shoes.jpg
-puma_mens_classics_png.jpg
 puma_mens_classics_Suede-Mid-XXI-Men's-Sneakers.jpg
 puma_mens_motorsport_Scuderia-Ferrari-Race-Future-Kart-Cat-Men's-Motorsport-Shoes.jpg
 puma_mens_performance_basketball_Clyde-Hardwood-Retro-Fantasy-Basketball-Shoes.jpg
