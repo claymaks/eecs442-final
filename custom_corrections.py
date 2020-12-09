@@ -7,7 +7,7 @@ import random
 
 BLUR = 21
 CANNY_THRESH_1 = 10
-CANNY_THRESH_2 = 50
+CANNY_THRESH_2 = 20
 MASK_DILATE_ITER = 20
 MASK_ERODE_ITER = 20
 MASK_COLOR = (1.0,1.0,1.0) # In BGR format
@@ -103,16 +103,22 @@ def correct_shoes(shoe, condition, func):
         if condition in file:
             func(os.path.join(dirname, file))
         
-
+ 
 
 if __name__ == "__main__":
     # correct_shoes("underarmor", "DEFAULT", flip)
     # correct_shoes("adidas", "adidas", flip)
+    print("center nike")
     correct_shoes("nike", "nike", center_nike)
+    print("remove background nike")
     correct_shoes("nike", "nike", remove_background)
+    print("center adidas")
     correct_shoes("adidas", "adidas", center_adidas)
+    print("remove background adidas")
     correct_shoes("adidas", "adidas", remove_background)
+    print("remove background puma")
     correct_shoes("puma", "puma", remove_background)
+    print("remove background underarmor")
     correct_shoes("underarmor", "underarmor", remove_background)
 
     
