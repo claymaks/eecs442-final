@@ -2,6 +2,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 import cv2
+from PIL import Image
 import numpy as np
 import random
 
@@ -11,6 +12,22 @@ CANNY_THRESH_2 = 20
 MASK_DILATE_ITER = 20
 MASK_ERODE_ITER = 20
 MASK_COLOR = (1.0,1.0,1.0) # In BGR format
+
+def offset_gen(num_images, desired):
+    print(desired // num_images)
+    def random_offset(file):
+        img = cv2.imread(file)
+        for i in range(desired // num_images):
+            background = np.zeros([276, 276, 3], dtype=np.uint8)
+            background.fill(255)
+            rand1 = random.randint(0, 20)
+            rand2 = random.randint(0, 20)
+            background[20-rand1:276-rand1, 20-rand2:276-rand2, :] = img
+            background = background[10:266, 10:266, :]
+            fn = file.split(".")
+            fn = fn[0] + f"_{i}_{10-rand1}_{10-rand2}.jpg"
+            cv2.imwrite(fn, background)
+    return random_offset
 
 
 def center_adidas(file):
@@ -39,6 +56,34 @@ def center_nike(file):
     #cv2.imshow('final', final)
     #cv2.waitKey()
     cv2.imwrite(file, final)
+
+
+def rgba2rgb(file, background=(255,255,255) ):
+    f = open(file, "rb")
+    image = Image.open(f).convert("RGBA")
+    rgba = np.array(image)
+    row, col, ch = rgba.shape
+    if ch == 3:
+        Image.fromarray(np.asarray( rgba, dtype='uint8' )).save(file)
+        f.close()
+        return 
+
+    assert ch == 4, 'RGBA image has 4 channels.'
+
+    rgb = np.zeros( (row, col, 3), dtype='float32' )
+    r, g, b, a = rgba[:,:,0], rgba[:,:,1], rgba[:,:,2], rgba[:,:,3]
+
+    a = np.asarray( a, dtype='float32' ) / 255.0
+
+    R, G, B = background
+
+    rgb[:,:,0] = r * a + (1.0 - a) * R
+    rgb[:,:,1] = g * a + (1.0 - a) * G
+    rgb[:,:,2] = b * a + (1.0 - a) * B
+    rgb = Image.fromarray(np.asarray( rgb, dtype='uint8' ))
+    rgb.save(file)
+    f.close()
+    return rgb
 
 
 def remove_background(file):
@@ -102,23 +147,41 @@ def correct_shoes(shoe, condition, func):
     for file in onlyfiles:
         if condition in file:
             func(os.path.join(dirname, file))
+    return len(onlyfiles)
         
  
 
 if __name__ == "__main__":
-    # correct_shoes("underarmor", "DEFAULT", flip)
-    # correct_shoes("adidas", "adidas", flip)
+    print("puma not trans")
+    p = correct_shoes("puma", "puma", rgba2rgb)
+    
+##    print("flip ua")
+##    correct_shoes("underarmor", "DEFAULT", flip)
+##    print("flip adidas")
+##    correct_shoes("adidas", "adidas", flip)
+    
     print("center nike")
-    correct_shoes("nike", "nike", center_nike)
+    n = correct_shoes("nike", "nike", center_nike)
     print("remove background nike")
     correct_shoes("nike", "nike", remove_background)
     print("center adidas")
-    correct_shoes("adidas", "adidas", center_adidas)
+    a = correct_shoes("adidas", "adidas", center_adidas)
     print("remove background adidas")
     correct_shoes("adidas", "adidas", remove_background)
-    print("remove background puma")
-    correct_shoes("puma", "puma", remove_background)
     print("remove background underarmor")
-    correct_shoes("underarmor", "underarmor", remove_background)
+    u = correct_shoes("underarmor", "underarmor", remove_background)
+    print("randomization nike")
+    random_offset = offset_gen(n, 10000)
+    correct_shoes("nike", "nike", random_offset)
+    print("randomization adidas")
+    random_offset = offset_gen(a, 10000)
+    correct_shoes("adidas", "adidas", random_offset)
+    print("randomization puma")
+    random_offset = offset_gen(p, 10000)
+    correct_shoes("puma", "puma", random_offset)
+    print("randomization underarmor")
+    random_offset = offset_gen(u, 10000)
+    correct_shoes("underarmor", "underarmor", random_offset)
+    
 
     

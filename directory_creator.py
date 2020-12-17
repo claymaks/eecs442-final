@@ -7,6 +7,8 @@ def generate_directory(shoe):
     onlyfiles = [f for f in listdir(dirname) if isfile(join(dirname, f))]
     f = open(os.path.join(dirname, "directory.txt"), 'w+')
     for file in onlyfiles:
+        if ".jpg" not in file:
+            continue
         print(file, file=f)
 
 
